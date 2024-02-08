@@ -150,4 +150,12 @@ let () =
           `B ({
             thing = 1;
           }))
+    ; test_decode ~name:"decode variant3"
+        ~yojson:Bucklespec_j.string_of_variant3
+        ~buckle:Bucklespec_bs.read_variant3
+        ~data: Bucklespec_t.(A "hello")
+    ; test_encode ~name:"encode variant3"
+        ~yojson:Bucklespec_j.variant3_of_string
+        ~buckle:Bucklespec_bs.write_variant3
+        ~data: Bucklespec_t.(A "hello")
     ]
