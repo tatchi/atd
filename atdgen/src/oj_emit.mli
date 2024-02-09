@@ -2,6 +2,7 @@
 
 val make_ocaml_files
   :opens:string list
+  -> prelude: string option
   -> with_typedefs:bool
   -> with_create:bool
   -> with_fundefs:bool

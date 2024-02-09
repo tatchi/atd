@@ -52,6 +52,7 @@ let parse_ocaml_version () =
 
 let main () =
   let pos_fname = ref None in
+  let prelude = ref None in
   let pos_lnum = ref None in
   let files = ref [] in
   let opens = ref [] in
@@ -244,7 +245,9 @@ let main () =
           module unless otherwise annotated. Type aliases are created
           for each type, e.g.
             type t = Module.t";
-
+    "-prelude", Arg.String (set_once "prelude" prelude),
+    "PRELUDE
+          Append raw content at the beginning of the generated file";
     "-open", Arg.String set_opens,
     "MODULE1,MODULE2,...
           List of modules to open (comma-separated or space-separated)";
@@ -391,14 +394,16 @@ Recommended usage: %s (-t|-b|-j|-v|-dep|-list|-mel) example.atd" Sys.argv.(0) in
     | T | B | J | V | Biniou | Json | Validate ->
 
         let opens = List.rev !opens in
-        let make_ocaml_files =
+        let prelude = !prelude in
+        let make_ocaml_files ~prelude =
           match mode with
               T ->
-                Ob_emit.make_ocaml_files
+                Ob_emit.make_ocaml_files ~prelude
             | B | Biniou ->
-                Ob_emit.make_ocaml_files
+                Ob_emit.make_ocaml_files ~prelude:None
             | J | Json ->
                 Oj_emit.make_ocaml_files
+                  ~prelude
                   ~std: !std_json
                   ~unknown_field_handler: !unknown_field_handler
                   ~preprocess_input: !j_preprocess_input
@@ -413,6 +418,7 @@ Recommended usage: %s (-t|-b|-j|-v|-dep|-list|-mel) example.atd" Sys.argv.(0) in
         make_ocaml_files
           ~pp_convs: !pp_convs
           ~opens
+          ~prelude
           ~with_typedefs: (with_default true !with_typedefs)
           ~with_create
           ~with_fundefs: (with_default true !with_fundefs)

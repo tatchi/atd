@@ -1325,6 +1325,7 @@ let make_ml
 
 let make_ocaml_files
     ~opens
+    ~prelude
     ~with_typedefs
     ~with_create
     ~with_fundefs
@@ -1383,6 +1384,9 @@ let make_ocaml_files
 (* Auto-generated from %s *)
 [@@@ocaml.warning \"-27-32-33-35-39\"]" src
   in
+  let header = match prelude with
+    | None -> header
+    | Some prelude -> sprintf "%s\n%s" header prelude in
   let mli =
     make_mli ~header ~opens ~with_typedefs ~with_create ~with_fundefs
       ocaml_typedefs (Mapping.make_deref defs1) defs1

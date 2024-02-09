@@ -1315,10 +1315,13 @@ let make_ocaml_biniou_impl ~with_create ~original_types ~ocaml_version
 *)
 
 let make_mli
-    ~header ~opens ~with_typedefs ~with_create ~with_fundefs
+    ~header ~prelude ~opens ~with_typedefs ~with_create ~with_fundefs
     ocaml_typedefs deref defs =
   let buf = Buffer.create 1000 in
   bprintf buf "%s\n" header;
+  (match prelude with
+  | None -> ()
+  | Some prelude -> bprintf buf "%s\n" prelude);
   Ox_emit.write_opens buf opens;
   if with_typedefs then
     bprintf buf "%s\n" ocaml_typedefs;
@@ -1329,11 +1332,14 @@ let make_mli
   Buffer.contents buf
 
 let make_ml
-    ~header ~opens ~with_typedefs ~with_create ~with_fundefs ~original_types
+    ~header ~prelude ~opens ~with_typedefs ~with_create ~with_fundefs ~original_types
     ~ocaml_version
     ocaml_typedefs deref defs =
   let buf = Buffer.create 1000 in
   bprintf buf "%s\n" header;
+  (match prelude with
+  | None -> ()
+  | Some prelude -> bprintf buf "%s\n" prelude);
   Ox_emit.write_opens buf opens;
   if with_typedefs then
     bprintf buf "%s\n" ocaml_typedefs;
@@ -1347,6 +1353,7 @@ let make_ml
 
 let make_ocaml_files
     ~opens
+    ~prelude
     ~with_typedefs
     ~with_create
     ~with_fundefs
@@ -1402,11 +1409,11 @@ let make_ocaml_files
 [@@@ocaml.warning "-27-32-33-35-39"]|} src
   in
   let mli =
-    make_mli ~header ~opens ~with_typedefs ~with_create ~with_fundefs
+    make_mli ~header ~prelude ~opens ~with_typedefs ~with_create ~with_fundefs
       ocaml_typedefs (Mapping.make_deref defs1) defs1
   in
   let ml =
-    make_ml ~header ~opens ~with_typedefs ~with_create ~with_fundefs
+    make_ml ~header ~prelude ~opens ~with_typedefs ~with_create ~with_fundefs
       ~original_types ~ocaml_version ocaml_typedefs
       (Mapping.make_deref defs) defs
   in

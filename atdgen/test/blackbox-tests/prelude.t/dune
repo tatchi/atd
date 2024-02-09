@@ -1,0 +1,26 @@
+(rule
+ (targets spec_t.ml spec_t.mli)
+ (mode
+  (promote (until-clean)))
+ (deps spec.atd)
+ (action
+  (run
+   %{bin:atdgen}
+   -prelude
+   "[@@@alert \"-codegen_only\"]\n[@@@alert \"-something_else\"]"
+   -t
+   %{deps})))
+
+(rule
+ (targets spec_j.ml spec_j.mli)
+ (mode
+  (promote (until-clean)))
+ (deps spec.atd)
+ (action
+  (run
+   %{bin:atdgen}
+   -prelude
+   "[@@@alert \"-codegen_only\"]\n[@@@alert \"-something_else\"]"
+   -j
+   -j-std
+   %{deps})))
