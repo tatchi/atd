@@ -224,10 +224,19 @@ let write_file file s =
   output_string oc s;
   close_out oc
 
-let write_ocaml out mli ml =
+type content = 
+ | Ml of string
+ | Mli of string
+ | Both of (string * string)
+
+let write_ocaml out content =
   match out with
-    Stdout ->
-      printf "\
+  | Stdout ->
+    (match content with
+    | Ml ml -> printf "%s" ml
+    | Mli mli -> printf "%s" mli
+    | Both (ml, mli) ->
+          printf "\
 struct
 %s
 end :
@@ -236,11 +245,17 @@ sig
 end
 "
         ml mli;
-      flush stdout
-
+      flush stdout)
   | Files prefix ->
-      write_file (prefix ^ ".mli") mli;
-      write_file (prefix ^ ".ml") ml
+    let write_ml = write_file (prefix ^ ".ml") in
+    let write_mli = write_file (prefix ^ ".mli") in
+    match content with
+    | Ml ml -> write_ml ml
+    | Mli mli -> write_mli mli
+    | Both (ml, mli) ->
+        write_mli mli;
+        write_ml ml
+
 
 let is_exportable def =
   let s = def.def_name in

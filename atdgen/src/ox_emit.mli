@@ -8,6 +8,11 @@ type target =
   | Files of string
   | Stdout
 
+type content = 
+| Ml of string
+| Mli of string
+| Both of (string * string)
+
 val get_full_type_name : (_, _) Mapping.def -> string
 
 val is_exportable : (_, _) Mapping.def -> bool
@@ -41,7 +46,7 @@ val needs_type_annot : _ expr -> bool
 
 val check : _ grouped_defs -> unit
 
-val write_ocaml : target -> string -> string -> unit
+val write_ocaml : target -> content  -> unit
 
 val name_of_var : string -> string
 

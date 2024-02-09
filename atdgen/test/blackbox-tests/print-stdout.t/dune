@@ -1,0 +1,31 @@
+(rule
+ (target spec_t.ml)
+ (mode
+  (promote (until-clean)))
+ (deps spec.atd)
+ (action
+  (run %{bin:atdgen} -t -output ml %{deps})))
+
+(rule
+ (target spec_with_prelude_t.ml)
+ (deps spec.atd)
+ (mode
+  (promote (until-clean)))
+ (action
+  (with-stdout-to
+   %{target}
+   (progn
+    (echo "[@@@alert \"-codegen_only\"]\n")
+    (run %{bin:atdgen} -t -output ml -o - %{deps})))))
+
+(rule
+ (target spec_with_prelude_t.mli)
+ (deps spec.atd)
+ (mode
+  (promote (until-clean)))
+ (action
+  (with-stdout-to
+   %{target}
+   (progn
+    (echo "[@@@alert \"-codegen_only\"]\n")
+    (run %{bin:atdgen} -t -output mli -o - %{deps})))))

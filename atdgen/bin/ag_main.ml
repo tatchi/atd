@@ -53,6 +53,7 @@ let parse_ocaml_version () =
 let main () =
   let pos_fname = ref None in
   let pos_lnum = ref None in
+  let output_type = ref Ob_emit.Both_Ml_Mli in
   let files = ref [] in
   let opens = ref [] in
   let with_typedefs = ref None in
@@ -249,6 +250,17 @@ let main () =
     "MODULE1,MODULE2,...
           List of modules to open (comma-separated or space-separated)";
 
+    "-output", Arg.String (fun s -> 
+        let v = match (String.lowercase_ascii s) with 
+          | "ml" -> Ob_emit.Ml_only 
+          | "mli" -> Mli_only
+          | "both" -> Both_Ml_Mli
+          | _ -> failwith "-output must be either ml, mli or both"
+        in
+        output_type := v),
+    "ml, mli or both (default: both)
+          Specify what type of content to output";
+
     "-nfd", Arg.Unit (fun () ->
                         set_once "no function definitions" with_fundefs false),
     "
@@ -391,12 +403,12 @@ Recommended usage: %s (-t|-b|-j|-v|-dep|-list|-mel) example.atd" Sys.argv.(0) in
     | T | B | J | V | Biniou | Json | Validate ->
 
         let opens = List.rev !opens in
-        let make_ocaml_files =
+        let make_ocaml_files ~output =
           match mode with
               T ->
-                Ob_emit.make_ocaml_files
+                Ob_emit.make_ocaml_files ~output
             | B | Biniou ->
-                Ob_emit.make_ocaml_files
+                Ob_emit.make_ocaml_files ~output
             | J | Json ->
                 Oj_emit.make_ocaml_files
                   ~std: !std_json
@@ -413,6 +425,7 @@ Recommended usage: %s (-t|-b|-j|-v|-dep|-list|-mel) example.atd" Sys.argv.(0) in
         make_ocaml_files
           ~pp_convs: !pp_convs
           ~opens
+          ~output:!output_type
           ~with_typedefs: (with_default true !with_typedefs)
           ~with_create
           ~with_fundefs: (with_default true !with_fundefs)

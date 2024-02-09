@@ -1394,4 +1394,4 @@ let make_ocaml_files
       ~ocaml_version
       ocaml_typedefs (Mapping.make_deref defs) defs
   in
-  Ox_emit.write_ocaml out mli ml
+  Ox_emit.write_ocaml out (Both(mli, ml))

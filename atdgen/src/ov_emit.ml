@@ -475,4 +475,4 @@ let make_ocaml_files
     make_ml ~header ~opens ~with_typedefs ~with_create ~with_fundefs
       ~original_types ocaml_typedefs (Mapping.make_deref defs) defs
   in
-  Ox_emit.write_ocaml out mli ml
+  Ox_emit.write_ocaml out (Both(mli, ml))

@@ -1314,6 +1314,11 @@ let make_ocaml_biniou_impl ~with_create ~original_types ~ocaml_version
   Glue
 *)
 
+type output =
+  | Ml_only
+  | Mli_only
+  | Both_Ml_Mli
+
 let make_mli
     ~header ~opens ~with_typedefs ~with_create ~with_fundefs
     ocaml_typedefs deref defs =
@@ -1347,6 +1352,7 @@ let make_ml
 
 let make_ocaml_files
     ~opens
+    ~output
     ~with_typedefs
     ~with_create
     ~with_fundefs
@@ -1401,7 +1407,7 @@ let make_ocaml_files
     sprintf {|(* Auto-generated from %s *)
 [@@@ocaml.warning "-27-32-33-35-39"]|} src
   in
-  let mli =
+  let mli = 
     make_mli ~header ~opens ~with_typedefs ~with_create ~with_fundefs
       ocaml_typedefs (Mapping.make_deref defs1) defs1
   in
@@ -1410,4 +1416,7 @@ let make_ocaml_files
       ~original_types ~ocaml_version ocaml_typedefs
       (Mapping.make_deref defs) defs
   in
-  Ox_emit.write_ocaml out mli ml
+  match output with
+  | Ml_only -> Ox_emit.write_ocaml out (Ml ml)
+  | Mli_only -> Ox_emit.write_ocaml out (Mli mli)
+  | Both_Ml_Mli -> Ox_emit.write_ocaml out (Both (mli, ml))
